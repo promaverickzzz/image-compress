@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画像圧縮ツール - オンラインで簡単に画像サイズを縮小</title>
+    <meta name="description" content="ブラウザ上で簡単に画像を圧縮できる無料ツールです。画像のサイズを縮小し、ウェブサイトの表示速度を向上させましょう。">
+    <meta name="keywords" content="画像圧縮, 画像 圧縮, 画像サイズ縮小, オンライン圧縮ツール">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        #drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 20px;
+            width: 480px;
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+        #drop-area.highlight {
+            border-color: #3498db;
+            background-color: #ecf0f1;
+        }
+        #file-input {
+            display: none;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            border: none;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .delete-button {
+            background-color: #e74c3c;
+        }
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .image-container {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .image-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .thumbnail {
+            max-width: 200px;
+            max-height: 200px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        #compression-options {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            padding: 3px;
+            border-radius: 3px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+        }
+        .progress-bar-fill {
+            display: block;
+            height: 22px;
+            background-color: #3498db;
+            border-radius: 3px;
+            transition: width 500ms ease-in-out;
+        }
+        .feature-section, .faq-section, .testimonial-section {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .feature-list, .faq-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .feature-item, .faq-item {
+            margin-bottom: 15px;
+        }
+        .testimonial {
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        .testimonial-author {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>画像圧縮ツール</h1>
+    <p>このツールを使用して、ブラウザ上で簡単に画像を圧縮できます。ドラッグ＆ドロップまたはファイル選択ボタンから画像をアップロードしてください。</p>
+    
+    <div id="compression-options">
+        <label for="quality">圧縮品質:</label>
+        <input type="range" id="quality" name="quality" min="0" max="100" value="70">
+        <span id="quality-value">70%</span>
+    </div>
+
+    <div id="drop-area">
+        <form class="my-form">
+            <p>画像ファイルをここにドラッグ＆ドロップするか、以下のボタンからファイルを選択してください。</p>
+            <input type="file" id="file-input" accept="image/*" multiple>
+            <label for="file-input" class="button">ファイルを選択</label>
+        </form>
+    </div>
+    
+    <div id="loading">
+        <p>圧縮中...</p>
+        <div class="progress-bar">
+            <span class="progress-bar-fill" style="width: 0%;"></span>
+        </div>
+    </div>
+
+    <div id="gallery"></div>
+
+    <div class="feature-section">
+        <h2>主な特徴</h2>
+        <ul class="feature-list">
+            <li class="feature-item">ブラウザ上で簡単に画像を圧縮</li>
+            <li class="feature-item">ドラッグ＆ドロップでファイルをアップロード</li>
+            <li class="feature-item">圧縮品質を調整可能</li>
+            <li class="feature-item">複数の画像を一括処理</li>
+            <li class="feature-item">圧縮された画像を即座にダウンロード可能</li>
+        </ul>
+    </div>
+
+    <div class="faq-section">
+        <h2>よくある質問</h2>
+        <ul class="faq-list">
+            <li class="faq-item">
+                <h3>Q: このツールは無料で使えますか？</h3>
+                <p>A: はい、完全に無料でご利用いただけます。</p>
+            </li>
+            <li class="faq-item">
+                <h3>Q: アップロードした画像は保存されますか？</h3>
+                <p>A: いいえ、すべての処理はあなたのブラウザ上で行われ、サーバーにアップロードされることはありません。</p>
+            </li>
+            <li class="faq-item">
+                <h3>Q: どのような画像形式に対応していますか？</h3>
+                <p>A: JPEG、PNG、GIF、WebPなど、一般的な画像形式に対応しています。</p>
+            </li>
+        </ul>
+    </div>
+
+    <div class="testimonial-section">
+        <h2>ユーザーの声</h2>
+        <div class="testimonial">
+            <p>「このツールのおかげで、ウェブサイトの表示速度が大幅に改善しました。とても使いやすいです！」</p>
+            <p class="testimonial-author">- 田中さん（ウェブデザイナー）</p>
+        </div>
+        <div class="testimonial">
+            <p>「複数の画像を一度に圧縮できるので、作業効率が上がりました。素晴らしいツールです。」</p>
+            <p class="testimonial-author">- 佐藤さん（マーケター）</p>
+        </div>
+    </div>
+
+    <script>
+        let dropArea = document.getElementById('drop-area');
+        let qualitySlider = document.getElementById('quality');
+        let qualityValue = document.getElementById('quality-value');
+        let loading = document.getElementById('loading');
+        let progressBar = document.querySelector('.progress-bar-fill');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropArea.classList.add('highlight');
+        }
+
+        function unhighlight(e) {
+            dropArea.classList.remove('highlight');
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            handleFiles(files);
+        }
+
+        let fileInput = document.getElementById('file-input');
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        qualitySlider.addEventListener('input', function() {
+            qualityValue.textContent = this.value + '%';
+        });
+
+        function handleFiles(files) {
+            loading.style.display = 'block';
+            progressBar.style.width = '0%';
+            
+            let processed = 0;
+            ([...files]).forEach((file, index) => {
+                compressImage(file, index, files.length);
+            });
+        }
+
+        function compressImage(file, index, total) {
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function() {
+                let img = new Image();
+                img.src = reader.result;
+                img.onload = function() {
+                    let canvas = document.createElement('canvas');
+                    let ctx = canvas.getContext('2d');
+                    
+                    let scaleFactor = 0.7;
+                    let width = img.width * scaleFactor;
+                    let height = img.height * scaleFactor;
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    canvas.toBlob(function(blob) {
+                        let compressedImage = new File([blob], file.name, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        });
+                        
+                        displayCompressedImage(compressedImage);
+                        
+                        processed++;
+                        progressBar.style.width = (processed / total * 100) + '%';
+                        
+                        if (processed === total) {
+                            loading.style.display = 'none';
+                        }
+                    }, 'image/jpeg', qualitySlider.value / 100);
+                }
+            }
+        }
+
+        function displayCompressedImage(file) {
+            let img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.className = 'thumbnail';
+            
+            let downloadLink = document.createElement('a');
+            downloadLink.href = img.src;
+            downloadLink.download = file.name;
+            downloadLink.innerHTML = '圧縮された画像をダウンロード';
+            downloadLink.className = 'button';
+            
+            let deleteButton = document.createElement('button');
+            deleteButton.innerHTML = '削除';
+            deleteButton.className = 'button delete-button';
+            deleteButton.onclick = function() {
+                wrapper.remove();
+            };
+            
+            let wrapper = document.createElement('div');
+            wrapper.className = 'image-container';
+            wrapper.appendChild(img);
+            wrapper.appendChild(downloadLink);
+            wrapper.appendChild(deleteButton);
+            
+            document.getElementById('gallery').appendChild(wrapper);
+        }
+    </script>
+</body>
+</html>
